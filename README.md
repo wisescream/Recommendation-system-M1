@@ -276,4 +276,4 @@ Tests cover:
 - Credential validation for the Kaggle download helper
 - Dashboard helper smoke tests (metrics loading, parquet discovery)
 
-CI runs automatically on push/PR to `main` via GitHub Actions.
+CI runs automatically on push/PR to `main` or `master` via GitHub Actions.
