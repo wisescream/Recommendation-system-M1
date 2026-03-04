@@ -1,6 +1,6 @@
 # Dockerized Spark CSV Pipeline
 
-![CI](https://github.com/<owner>/<repo>/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/wisescream/Recommendation-system-M1/actions/workflows/ci.yml/badge.svg)
 
 This project runs a small local Spark standalone cluster with Docker Compose and processes a Kaggle CSV dataset with PySpark. The default dataset is `shivamb/netflix-shows`, which is normalized to `./data/raw/dataset.csv` before the job runs.
 
