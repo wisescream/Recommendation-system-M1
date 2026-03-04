@@ -1,0 +1,22 @@
+{
+  "source_file": "/opt/spark-data/raw/dataset.csv",
+  "raw_row_count": 8809,
+  "cleaned_row_count": 5492,
+  "aggregated_row_count": 133,
+  "dropped_row_count": 3317,
+  "tokenized_document_count": 5492,
+  "filtered_document_count": 5492,
+  "stemmed_document_count": 5492,
+  "text_feature_row_count": 5492,
+  "keyword_row_count": 18795,
+  "bigram_row_count": 81069,
+  "tfidf_row_count": 18795,
+  "sentiment_row_count": 5492,
+  "positive_document_count": 1808,
+  "neutral_document_count": 2622,
+  "negative_document_count": 1062,
+  "top_keyword": "movie (Movie, 2586)",
+  "top_bigram": "international movie (Movie, 1664)",
+  "top_tfidf_term": "llama (TV Show, avg=2.003)",
+  "generated_at_utc": "2026-03-04T13:06:36+00:00"
+}

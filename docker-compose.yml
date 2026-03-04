@@ -1,0 +1,97 @@
+services:
+  spark-master:
+    build:
+      context: ./spark
+    image: algo-spark:4.0.1-nltk
+    hostname: spark-master
+    environment:
+      PYSPARK_PYTHON: python3
+      PYSPARK_DRIVER_PYTHON: python3
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.master.Master
+      - --host
+      - spark-master
+      - --port
+      - "7077"
+      - --webui-port
+      - "8080"
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    volumes:
+      - ./jobs:/opt/spark-apps
+      - ./data:/opt/spark-data
+    networks:
+      - spark-net
+    restart: unless-stopped
+
+  spark-worker:
+    build:
+      context: ./spark
+    image: algo-spark:4.0.1-nltk
+    hostname: spark-worker
+    depends_on:
+      - spark-master
+    environment:
+      PYSPARK_PYTHON: python3
+      PYSPARK_DRIVER_PYTHON: python3
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --webui-port
+      - "8081"
+      - --cores
+      - "2"
+      - --memory
+      - 2g
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/opt/spark-data
+    networks:
+      - spark-net
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: ./dashboard
+    depends_on:
+      - spark-master
+    command:
+      - streamlit
+      - run
+      - /app/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+      - --browser.gatherUsageStats=false
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./dashboard:/app
+      - ./data:/opt/spark-data
+    networks:
+      - spark-net
+    restart: unless-stopped
+
+  kaggle-downloader:
+    image: python:3.11-slim
+    profiles:
+      - tools
+    working_dir: /opt/helpers
+    environment:
+      KAGGLE_USERNAME: ${KAGGLE_USERNAME:-}
+      KAGGLE_KEY: ${KAGGLE_KEY:-}
+      KAGGLE_DATASET: ${KAGGLE_DATASET:-shivamb/netflix-shows}
+    command:
+      - sh
+      - -lc
+      - pip install --no-cache-dir kaggle && python /opt/helpers/download_kaggle.py
+    volumes:
+      - ./helpers:/opt/helpers:ro
+      - ./data/raw:/downloads
+
+networks:
+  spark-net:
+    driver: bridge

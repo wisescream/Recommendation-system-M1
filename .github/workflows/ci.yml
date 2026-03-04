@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyspark==4.0.1 nltk==3.9.1 numpy==2.2.3 \
+                      streamlit==1.43.2 pandas==2.2.3 pyarrow==19.0.1 altair==5.5.0 \
+                      pytest
+
+      - name: Download NLTK data
+        run: |
+          python -c "
+          import nltk
+          nltk.download('punkt',      download_dir='/home/runner/nltk_data')
+          nltk.download('punkt_tab',  download_dir='/home/runner/nltk_data')
+          nltk.download('stopwords',  download_dir='/home/runner/nltk_data')
+          "
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+
+      - name: Upload test artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: |
+            tests/
+            !tests/__pycache__/
